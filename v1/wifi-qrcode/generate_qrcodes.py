@@ -43,7 +43,7 @@ async def get_ssid_settings(aiomeraki: meraki.aio.AsyncDashboardAPI, network_id:
 async def main():
 
     parser = argparse.ArgumentParser(
-        description="Analyze the usage of subnetPool templates"
+        description="Generates QRCodes from Meraki wireless networks"
     )
     parser.add_argument(
         "-o",
@@ -61,7 +61,7 @@ async def main():
         dest="networks",
         nargs="+",
         required=False,
-        help="the name/id of the networks to generate the qr codes from",
+        help="the name/id of the networks to generate the qr codes from. If you are only providing this parameter, then you must provide the network IDs.",
     )
 
     parser.add_argument(
