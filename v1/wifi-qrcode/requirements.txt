@@ -1,0 +1,2 @@
+qrcode[pil]
+meraki>=1.0.0b14
