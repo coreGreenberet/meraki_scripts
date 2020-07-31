@@ -1,0 +1,2 @@
+meraki>=1.0.0b14
+aiodns

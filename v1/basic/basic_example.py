@@ -11,7 +11,7 @@ import meraki.aio
 async def main():
 
     parser = argparse.ArgumentParser(
-        description="Generates QRCodes from Meraki wireless networks"
+        description="Example Script with basic arguments"
     )
     parser.add_argument(
         "-o",
@@ -51,7 +51,15 @@ async def main():
         maximum_retries = 5
     ) as aiomeraki:
         # Get list of organizations to which API key has access
-
+        networks = []
+        if args.organization:
+            organizations = await aiomeraki.organizations.getOrganizations()
+            for o in organizations:
+                if o["id"] == args.organization or o["name"] == args.organization:
+                    o_networks = await aiomeraki.organizations.getOrganizationNetworks(
+                        o["id"]
+                    )
+                    print(o_networks)     
         print("Script complete!")
 
 
