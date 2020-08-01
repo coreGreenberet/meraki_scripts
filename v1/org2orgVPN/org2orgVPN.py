@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import aiodns
 import json
 import os
 import sys
@@ -8,25 +7,36 @@ import secrets
 import string
 import logging
 
-from typing import List,Dict
+from typing import List, Dict
 
 from meraki.aio import AsyncDashboardAPI
 
-dns_resolver = aiodns.DNSResolver()
 logger = logging.getLogger(__name__)
 
-class VPNOrganization():
-    def __init__(self, organizationID:str, vpn_networks:List[VPNNetwork],vpn_peers:Dict,tags:List[str]):
-        self.organizationID = organizationID
-        self.vpn_networks = vpn_networks
-        self.vpn_peers = vpn_peers
-        self.tags = tags
 
 class VPNNetwork:
     def __init__(self, fqdn: str, publicIP: str, networks: List[str]):
         self.fqdn = fqdn
         self.publicIP = publicIP
         self.networks = networks
+
+
+class VPNOrganization:
+    def __init__(
+        self,
+        organizationID: str,
+        vpn_networks: List[VPNNetwork],
+        vpn_peers: Dict,
+        tags: List[str],
+    ):
+        self.organizationID = organizationID
+        self.vpn_networks = vpn_networks
+        self.vpn_peers = vpn_peers
+        self.tags = tags
+
+
+class NoPSKError(Exception):
+    pass
 
 
 async def get_vpn_networks(
@@ -70,6 +80,81 @@ async def get_vpn_networks(
             break  # there is only one appliance per network, so we can skip the other devices
 
     return ret
+
+
+def prepare_vpn_peer(
+    name: str,
+    publicIp: str,
+    privateSubnets: List[str],
+    secret: str,
+    ikeVersion: int,
+    networkTags: List[str],
+):
+    return {
+        "name": name[:32],
+        "publicIp": publicIp,
+        "privateSubnets": privateSubnets,
+        "secret": secret,
+        "ikeVersion": ikeVersion,
+        "ipsecPoliciesPreset": "default",
+        "networkTags": networkTags,
+    }
+
+
+async def connect_organization(
+    aiomeraki: AsyncDashboardAPI,
+    org1: VPNOrganization,
+    org2: VPNOrganization,
+    psk: str = None,
+    ike_version: int = None,
+):
+    privateSubnets = []
+    [privateSubnets.extend(x.networks) for x in org2.vpn_networks]
+    new_vpn_peers = []
+    for vpn_peer in org1.vpn_peers:
+        for n2 in org2.vpn_networks:  # check if a peer must be updated
+            if vpn_peer["name"] == n2.fqdn or vpn_peer["publicIp"] == n2.publicIP:
+                vpn_peer["privateSubnets"] = privateSubnets
+                if psk:
+                    vpn_peer["secret"] = psk
+                if ike_version:
+                    vpn_peer["ikeVersion"] = ike_version
+
+                peer = prepare_vpn_peer(
+                    n2.fqdn,
+                    n2.publicIP,
+                    privateSubnets,
+                    vpn_peer["secret"],
+                    vpn_peer["ikeVersion"],
+                    org1.tags if len(org1.tags) > 0 else ["all"],
+                )
+
+                new_vpn_peers.append(peer)
+                break
+        else:
+            new_vpn_peers.append(vpn_peer)  # adding existing peers
+            pass
+    # adding new peers
+    for n2 in org2.vpn_networks:  # check if a peer must be updated
+        for vpn_peer in org1.vpn_peers:
+            if vpn_peer["name"] == n2.fqdn or vpn_peer["publicIp"] == n2.publicIP:
+                break
+        else:
+            if not psk:
+                raise NoPSKError()
+            peer = prepare_vpn_peer(
+                n2.fqdn,
+                n2.publicIP,
+                privateSubnets,
+                psk,
+                ike_version if ike_version else 1,
+                org1.tags if len(org1.tags) > 0 else ["all"],
+            )
+            new_vpn_peers.append(peer)
+
+    await aiomeraki.appliance.updateOrganizationApplianceVpnThirdPartyVPNPeers(
+        org1.organizationID, new_vpn_peers
+    )
 
 
 async def main():
@@ -160,35 +245,42 @@ async def main():
         maximum_retries=5,
     ) as aiomeraki:
         # Get list of organizations to which API key has access
-
         organizations = await aiomeraki.organizations.getOrganizations()
-
-        vpn_orgs = []
+        
+        logger.info("Downloading Settings")
+        vpn_orgs = [None, None]
         for o in organizations:
             if o["id"] == args.organization1 or o["name"] == args.organization1:
-                networks = await get_vpn_networks(
-                    aiomeraki, o["id"], args.tags1
-                )
+                networks = await get_vpn_networks(aiomeraki, o["id"], args.tags1)
 
-                peers = await aiomeraki.appliance.getOrganizationApplianceVpnThirdPartyVPNPeers(o["id"])
-                org = VPNOrganization(o["id"], networks, peers, args.tags1)
-                vpn_orgs.append(org)
+                peers = await aiomeraki.appliance.getOrganizationApplianceVpnThirdPartyVPNPeers(
+                    o["id"]
+                )
+                org = VPNOrganization(o["id"], networks, peers["peers"], args.tags1)
+                vpn_orgs[0] = org
             elif o["id"] == args.organization2 or o["name"] == args.organization2:
-                networks = await get_vpn_networks(
-                    aiomeraki, o["id"], args.tags2
+                networks = await get_vpn_networks(aiomeraki, o["id"], args.tags2)
+
+                peers = await aiomeraki.appliance.getOrganizationApplianceVpnThirdPartyVPNPeers(
+                    o["id"]
                 )
+                org = VPNOrganization(o["id"], networks, peers["peers"], args.tags2)
+                vpn_orgs[1] = org
 
-                peers = await aiomeraki.appliance.getOrganizationApplianceVpnThirdPartyVPNPeers(o["id"])
-                org = VPNOrganization(o["id"], networks, peers, args.tags2)
-                vpn_orgs.append(org)
-
-        if len(vpn_orgs) != 2:
+        if None in vpn_orgs:
             logger.error("Could not find the correct organizations")
             return
-        
-        print("Script complete!")
+        try:
+            logger.info("Updating VPN Settings")
+            await connect_organization(
+                aiomeraki, vpn_orgs[0], vpn_orgs[1], args.psk, args.ike_version
+            )
+            await connect_organization(
+                aiomeraki, vpn_orgs[1], vpn_orgs[0], args.psk, args.ike_version
+            )
+        except NoPSKError:
+            logger.error("Unable to add new peer. Please specify --psk.")
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())
