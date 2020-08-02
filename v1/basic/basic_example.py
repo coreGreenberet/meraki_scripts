@@ -7,12 +7,9 @@ import sys
 import meraki.aio
 
 
-
 async def main():
 
-    parser = argparse.ArgumentParser(
-        description="Example Script with basic arguments"
-    )
+    parser = argparse.ArgumentParser(description="Example Script with basic arguments")
     parser.add_argument(
         "-o",
         "--organization",
@@ -48,7 +45,7 @@ async def main():
         base_url="https://api.meraki.com/api/v1",
         log_file_prefix=__file__[:-3],
         print_console=False,
-        maximum_retries = 5
+        maximum_retries=5,
     ) as aiomeraki:
         # Get list of organizations to which API key has access
         networks = []
@@ -59,7 +56,7 @@ async def main():
                     o_networks = await aiomeraki.organizations.getOrganizationNetworks(
                         o["id"]
                     )
-                    print(o_networks)     
+                    print(o_networks)
         print("Script complete!")
 
 

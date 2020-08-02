@@ -72,11 +72,14 @@ async def get_vpn_networks(
             site2siteVPN = await aiomeraki.appliance.getNetworkApplianceVpnSiteToSiteVpn(
                 n["id"]
             )
+
             subnets = []
             for s in site2siteVPN["subnets"]:
                 if s["useVpn"]:
                     subnets.append(s["localSubnet"])
-            ret.append(VPNNetwork(fqdn, publicIP, subnets))
+
+            if len(subnets) > 0:
+                ret.append(VPNNetwork(fqdn, publicIP, subnets))
             break  # there is only one appliance per network, so we can skip the other devices
 
     return ret
@@ -246,7 +249,7 @@ async def main():
     ) as aiomeraki:
         # Get list of organizations to which API key has access
         organizations = await aiomeraki.organizations.getOrganizations()
-        
+
         logger.info("Downloading Settings")
         vpn_orgs = [None, None]
         for o in organizations:
