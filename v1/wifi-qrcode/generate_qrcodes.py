@@ -68,7 +68,7 @@ async def main():
         dest="networks",
         nargs="+",
         required=False,
-        help="the name/id of the networks to generate the qr codes from. If you are only providing this parameter, then you must provide the network IDs.",
+        help="the name/id of the networks to generate the qr codes from. If you are providing this parameter, then you must provide the organization.",
     )
 
     parser.add_argument(
