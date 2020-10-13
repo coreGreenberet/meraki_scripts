@@ -137,7 +137,6 @@ optional arguments:
                         the name/id of the organization
   -n NETWORKS [NETWORKS ...], --network NETWORKS [NETWORKS ...]
                         the name/id of the networks to generate the qr codes
-                        from. If you are only providing this parameter, then
-                        you must provide the network IDs.
+                        from.  If you are providing this parameter, then you must provide the organization.
   -s SSIDS [SSIDS ...], --ssid SSIDS [SSIDS ...]
                         the name of the ssids to generate the qr codes```
