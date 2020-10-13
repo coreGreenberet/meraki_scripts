@@ -2,11 +2,20 @@
 Just a collection of helpful meraki scripts.
 All scripts are using the asyncio version of the meraki library
 
-# V0
-## aio_create_dummy_orgs.py
+# Table of Contents
+1. [API Version V0](#v0)
+    1. [aio_create_dummy_orgs.py](#aio_create_dummy_orgs.py)
+    2. [aio_list_used_template_ranges.py](#aio_list_used_template_ranges.py)
+2. [API Version V1](#v1)
+    1. [org2orgVPN ](#org2orgVPN)
+    1. [wifi-qrcode ](#wifi-qrcode)
+
+# API Version V0 <a name="v0"></a>
+
+## aio_create_dummy_orgs.py <a name="aio_create_dummy_orgs.py"></a>
 This script will generate 200 organizations with 10 networks each. This is helpfull, if you want to test something over more networks.
 
-## aio_list_used_template_ranges.py
+## aio_list_used_template_ranges.py <a name="aio_list_used_template_ranges.py"></a>
 
 This script will analyze and print the usage of subnetPools inside an organization.
 
@@ -86,9 +95,9 @@ It will download the vlan information of all networks and calculate their usage 
 
 Print results
 
-# V1
+# API Version V1 <a name="v1"></a>
 
-## org2orgVPN
+## org2orgVPN <a name="org2orgVPN"></a>
 This script will create/update the VPN connection between two meraki
 organizations.
 
@@ -119,7 +128,7 @@ optional arguments:
 ```
 
 
-## wifi-qrcode 
+## wifi-qrcode <a name="wifi-qrcode"></a>
 This script will generate QRCodes for configured SSIDs. 
 You have to provide at least the organization or network parameter. 
 
