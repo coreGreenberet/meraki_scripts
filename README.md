@@ -3,12 +3,17 @@ Just a collection of helpful meraki scripts.
 All scripts are using the asyncio version of the meraki library
 
 # Table of Contents
-1. [API Version V0](#v0)
+1. [General](#api_key)
+2. [API Version V0](#v0)
     1. [aio_create_dummy_orgs.py](#aio_create_dummy_orgs.py)
     2. [aio_list_used_template_ranges.py](#aio_list_used_template_ranges.py)
-2. [API Version V1](#v1)
+3. [API Version V1](#v1)
     1. [org2orgVPN ](#org2orgVPN)
     1. [wifi-qrcode ](#wifi-qrcode)
+	
+# General <a name="api_key"></a>
+To run these scripts your organization(s) must be enabled for api access and you must have an api key.
+Please refer to the [official documentation](https://developer.cisco.com/meraki/api-v1/#!authorization/authorization) for more details.
 
 # API Version V0 <a name="v0"></a>
 
@@ -130,7 +135,7 @@ optional arguments:
 
 ## wifi-qrcode <a name="wifi-qrcode"></a>
 This script will generate QRCodes for configured SSIDs. 
-You have to provide at least the organization or network parameter. 
+You have to provide at least the organization, but you can filter it also by the network parameter. 
 
 the QRCodes will be places in a subdirectory "img". The Filename is {NetworkName}_{SSID}.png.
 
