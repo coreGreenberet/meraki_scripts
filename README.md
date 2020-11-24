@@ -155,7 +155,8 @@ optional arguments:
                         from.  If you are providing this parameter, then you must 
                         provide the organization.
   -s SSIDS [SSIDS ...], --ssid SSIDS [SSIDS ...]
-                        the name of the ssids to generate the qr codes```
+                        the name of the ssids to generate the qr codes
+```
 
 
 
