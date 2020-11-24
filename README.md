@@ -8,8 +8,8 @@ All scripts are using the asyncio version of the meraki library
     1. [aio_create_dummy_orgs.py](#aio_create_dummy_orgs.py)
     2. [aio_list_used_template_ranges.py](#aio_list_used_template_ranges.py)
 3. [API Version V1](#v1)
-    1. [org2orgVPN ](#org2orgVPN)
-    1. [wifi-qrcode ](#wifi-qrcode)
+    1. [org2orgVPN](#org2orgVPN)
+    1. [wifi-qrcode](#wifi-qrcode)
 	
 # General <a name="api_key"></a>
 To run these scripts your organization(s) must be enabled for api access and you must have an api key.
@@ -155,3 +155,32 @@ optional arguments:
                         provide the organization.
   -s SSIDS [SSIDS ...], --ssid SSIDS [SSIDS ...]
                         the name of the ssids to generate the qr codes```
+
+## id_finder <a name="id_finder"></a>
+This scripts helps to find the id fo rorganization, network, device or (bluetooth) client just by passing it's name/description via a regular expression
+
+```
+usage: id_finder.py [-h] -p PATTERN [-s OPTIONS]
+                    [-o ORGANIZATION [ORGANIZATION ...]]
+                    [-n NETWORKS [NETWORKS ...]]
+
+This scripts helps to find the id of an organization, network, device or
+(bluetooth) client
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PATTERN, --pattern PATTERN
+                        the regular expression to search for (default: None)
+  -s OPTIONS, --search_options OPTIONS
+                        specifies which objects should be looked up:
+                        o=organizations, n=networks, d=devices, c=clients,
+                        b=bluetooth clients (default: ond)
+  -o ORGANIZATION [ORGANIZATION ...], --organization ORGANIZATION [ORGANIZATION ...]
+                        The name/id of the organizations under which you want
+                        to limit the search. This makes the o option of -s
+                        obsolete. (default: None)
+  -n NETWORKS [NETWORKS ...], --network NETWORKS [NETWORKS ...]
+                        the name/id of the networks under which you want to
+                        limit the search. This makes the n option of -s
+                        obsolete. (default: None)                      
+```

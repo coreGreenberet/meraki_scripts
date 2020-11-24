@@ -5,14 +5,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{b2be8c7d-18c1-4a2e-baa0-b2b5c7e1b0d4}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>v1\org2orgVPN\org2orgVPN.py</StartupFile>
+    <StartupFile>v1\id_finder\id_finder.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
-    <CommandLineArguments>-o1 Home -o2 MXTest</CommandLineArguments>
+    <CommandLineArguments>--help</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
@@ -30,6 +30,7 @@
     <Compile Include="v1\org2orgVPN\org2orgVPN.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="v1\id_finder\id_finder.py" />
     <Compile Include="v1\wifi-qrcode\generate_qrcodes.py">
       <SubType>Code</SubType>
     </Compile>
@@ -40,6 +41,7 @@
     <Folder Include="v1\basic\" />
     <Folder Include="v1\org2orgVPN\" />
     <Folder Include="v1\wifi-qrcode\" />
+    <Folder Include="v1\id_finder\" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -53,6 +55,8 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="README.md" />
+    <Content Include="v1\id_finder\requirements.txt" />
     <Content Include="v1\org2orgVPN\requirements.txt" />
     <Content Include="v1\wifi-qrcode\requirements.txt" />
   </ItemGroup>
