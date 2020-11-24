@@ -161,7 +161,9 @@ optional arguments:
 
 
 ## id_finder <a name="id_finder"></a>
-This scripts helps to find the id fo rorganization, network, device or (bluetooth) client just by passing it's name/description via a regular expression
+This scripts helps to find the id fo rorganization, network, device or (bluetooth) client just by passing it's name/description via a regular expression.
+
+By default it will only search in the organization-, network- or device name. To match also clients/bluetooth clients you have to specify the -s parameter.
 
 ```
 usage: id_finder.py [-h] -p PATTERN [-s OPTIONS]
