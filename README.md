@@ -157,6 +157,8 @@ optional arguments:
   -s SSIDS [SSIDS ...], --ssid SSIDS [SSIDS ...]
                         the name of the ssids to generate the qr codes```
 
+
+
 ## id_finder <a name="id_finder"></a>
 This scripts helps to find the id fo rorganization, network, device or (bluetooth) client just by passing it's name/description via a regular expression
 
