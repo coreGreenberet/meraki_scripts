@@ -179,7 +179,7 @@ async def main():
     ) as aiomeraki:
         # Get list of organizations to which API key has access
 
-        print(f"Searching for pattern {pattern}")
+        print(f"Searching for pattern {args.pattern}")
         organizations = await aiomeraki.organizations.getOrganizations()
         if args.organization:
             organizations = [
